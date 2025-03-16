@@ -1,0 +1,9 @@
+---
+- name: Start Nexus Repository container
+  docker_container:
+    name: nexus
+    image: sonatype/nexus3
+    state: started
+    restart_policy: always
+    published_ports:
+      - "8081:8081"

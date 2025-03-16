@@ -1,0 +1,10 @@
+---
+- name: Deploy Grafana in AKS using Helm
+  helm:
+    name: grafana
+    chart: grafana/grafana
+    release_namespace: default
+    values:
+      - "replicas: 1"
+      - "adminPassword: '100701'"
+      - "persistence.enabled: false"

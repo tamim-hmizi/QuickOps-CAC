@@ -1,0 +1,9 @@
+---
+- name: Deploy Clair in AKS using Helm
+  helm:
+    name: clair
+    chart: quay/clair
+    release_namespace: default
+    values:
+      - "clair.image.tag: v4.3.2"
+      - "clair.service.port: 6060"

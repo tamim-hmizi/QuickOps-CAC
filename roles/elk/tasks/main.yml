@@ -1,0 +1,26 @@
+---
+- name: Deploy Elasticsearch in AKS using Helm
+  helm:
+    name: elasticsearch
+    chart: elastic/elasticsearch
+    release_namespace: default
+    values:
+      - "imageTag: 7.10.2"
+      - "replicas: 1"
+
+- name: Deploy Logstash in AKS using Helm
+  helm:
+    name: logstash
+    chart: elastic/logstash
+    release_namespace: default
+    values:
+      - "imageTag: 7.10.2"
+
+- name: Deploy Kibana in AKS using Helm
+  helm:
+    name: kibana
+    chart: elastic/kibana
+    release_namespace: default
+    values:
+      - "imageTag: 7.10.2"
+      - "replicas: 1"

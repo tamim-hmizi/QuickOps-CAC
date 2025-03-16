@@ -1,0 +1,10 @@
+---
+- name: Deploy SonarQube in AKS using Helm
+  helm:
+    name: sonarqube
+    chart: sonarqube/sonarqube
+    release_namespace: default
+    values:
+      - "sonar.web.port: 9000"
+      - "sonar.web.contextPath: ''"
+      - "sonar.web.host: 0.0.0.0"

@@ -1,0 +1,11 @@
+---
+- name: Deploy Jenkins in AKS using Helm
+  helm:
+    name: jenkins
+    chart: jenkins/jenkins
+    release_namespace: default
+    values:
+      - "Master.ServiceType: LoadBalancer"
+      - "Master.Image: jenkins/jenkins:lts"
+      - "Master.AdminPassword: 100701"
+      - "Master.Tolerations: '[{\"key\": \"CriticalAddonsOnly\", \"operator\": \"Exists\"}]'"
