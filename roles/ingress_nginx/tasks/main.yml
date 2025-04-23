@@ -6,12 +6,12 @@
     state: present
 
 - name: Add ingress-nginx Helm repo
-  community.kubernetes.helm_repository:
+  kubernetes.core.helm_repository:
     name: ingress-nginx
     repo_url: "{{ ingress_nginx_helm_repo }}"
 
 - name: Deploy ingress-nginx via Helm
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ ingress_nginx_release_name }}"
     chart_ref: ingress-nginx/ingress-nginx
     chart_version: "{{ ingress_nginx_chart_version }}"
