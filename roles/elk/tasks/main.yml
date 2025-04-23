@@ -6,12 +6,12 @@
     state: present
 
 - name: Add Elastic Helm repo
-  community.kubernetes.helm_repository:
+  kubernetes.core.helm_repository:
     name: elastic
     repo_url: "{{ elk_helm_repo }}"
 
 - name: Deploy Elasticsearch
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: elasticsearch
     chart_ref: elastic/elasticsearch
     chart_version: "{{ elk_chart_version }}"
@@ -20,7 +20,7 @@
       replicas: "{{ elk_values.replicas }}"
 
 - name: Deploy Kibana
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: kibana
     chart_ref: elastic/kibana
     chart_version: "{{ elk_chart_version }}"
@@ -36,7 +36,7 @@
               - kibana.{{ cluster_domain }}
 
 - name: Deploy Logstash
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: logstash
     chart_ref: elastic/logstash
     chart_version: "{{ elk_chart_version }}"

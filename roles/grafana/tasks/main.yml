@@ -6,12 +6,12 @@
     state: present
 
 - name: Add Grafana Helm repo
-  community.kubernetes.helm_repository:
+  kubernetes.core.helm_repository:
     name: grafana
     repo_url: "{{ grafana_helm_repo }}"
 
 - name: Deploy Grafana
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ grafana_release_name }}"
     chart_ref: grafana/grafana
     chart_version: "{{ grafana_chart_version }}"

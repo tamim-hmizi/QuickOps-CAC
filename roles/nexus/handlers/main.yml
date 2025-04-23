@@ -2,6 +2,7 @@
   ansible.builtin.systemd:
     name: docker
     state: restarted
+    enabled: true
 
 - name: Restart NGINX
   ansible.builtin.service:

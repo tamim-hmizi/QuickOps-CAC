@@ -3,3 +3,5 @@ cert_email: "hmizitamim@hotmail.com"
 helm_version: "v3.14.3"
 helm_arch: "linux-amd64"
 helm_install_path: "/usr/local/bin/helm"
+docker_insecure_registries:
+  - "localhost:5000"

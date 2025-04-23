@@ -6,12 +6,12 @@
     state: present
 
 - name: Add Jenkins Helm repo
-  community.kubernetes.helm_repository:
+  kubernetes.core.helm_repository:
     name: jenkinsci
     repo_url: "{{ jenkins_helm_repo }}"
 
 - name: Deploy Jenkins via Helm
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ jenkins_release_name }}"
     chart_ref: jenkinsci/jenkins
     chart_version: "{{ jenkins_chart_version }}"

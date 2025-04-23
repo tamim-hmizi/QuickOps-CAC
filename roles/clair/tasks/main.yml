@@ -6,12 +6,12 @@
     state: present
 
 - name: Add Clair Helm repo
-  community.kubernetes.helm_repository:
+  kubernetes.core.helm_repository:
     name: "clair"
     repo_url: "{{ clair_helm_repo }}"
 
 - name: Deploy Clair via Helm
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: "{{ clair_release_name }}"
     chart_ref: clair/clair
     chart_version: "{{ clair_chart_version }}"
