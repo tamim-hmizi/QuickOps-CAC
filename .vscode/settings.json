@@ -1,6 +1,3 @@
 {
-  "ansible.python.interpreterPath": "/bin/python3",
-  "yaml.schemas": {
-    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks": "file:///home/tamimhmizi/QuickOps-Devops-CAC/roles/nexus/tasks/configure_nexus_registry.yml"
-  }
+  "ansible.python.interpreterPath": "/bin/python3"
 }
