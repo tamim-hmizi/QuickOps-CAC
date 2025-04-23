@@ -1,0 +1,14 @@
+use_default_rules: true
+
+skip_list:
+  - experimental
+  - no-free-form
+
+warn_list:
+  - logic-conditions
+
+enable_list:
+  - package-latest
+  - yaml-format
+  - var-naming
+  - block-lint
