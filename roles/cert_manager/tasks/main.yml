@@ -1,0 +1,36 @@
+- name: Create cert-manager namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ cert_manager_namespace }}"
+    state: present
+
+- name: Add Jetstack Helm repo
+  community.kubernetes.helm_repository:
+    name: "{{ cert_manager_release_name }}"
+    repo_url: "{{ cert_manager_helm_repo }}"
+
+- name: Deploy cert-manager via Helm
+  community.kubernetes.helm:
+    name: "{{ cert_manager_release_name }}"
+    chart_ref: jetstack/cert-manager
+    chart_version: "{{ cert_manager_chart_version }}"
+    release_namespace: "{{ cert_manager_namespace }}"
+    values: "{{ cert_manager_values }}"
+
+- name: Create ClusterIssuer for Let\'s Encrypt
+  kubernetes.core.k8s:
+    api_version: cert-manager.io/v1
+    kind: ClusterIssuer
+    name: "{{ cert_manager_cluster_issuer_name }}"
+    definition:
+      spec:
+        acme:
+          server: "{{ cert_manager_acme_server }}"
+          email: "{{ cert_manager_acme_email }}"
+          privateKeySecretRef:
+            name: "{{ cert_manager_cluster_issuer_name }}"
+          solvers:
+            - http01:
+                ingress:
+                  class: nginx

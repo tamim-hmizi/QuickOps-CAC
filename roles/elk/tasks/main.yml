@@ -1,26 +1,43 @@
----
-- name: Deploy Elasticsearch in AKS using Helm
-  helm:
+- name: Create ELK namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ elk_namespace }}"
+    state: present
+
+- name: Add Elastic Helm repo
+  community.kubernetes.helm_repository:
+    name: elastic
+    repo_url: "{{ elk_helm_repo }}"
+
+- name: Deploy Elasticsearch
+  community.kubernetes.helm:
     name: elasticsearch
-    chart: elastic/elasticsearch
-    release_namespace: default
+    chart_ref: elastic/elasticsearch
+    chart_version: "{{ elk_chart_version }}"
+    release_namespace: "{{ elk_namespace }}"
     values:
-      - "imageTag: 7.10.2"
-      - "replicas: 1"
+      replicas: "{{ elk_values.replicas }}"
 
-- name: Deploy Logstash in AKS using Helm
-  helm:
-    name: logstash
-    chart: elastic/logstash
-    release_namespace: default
-    values:
-      - "imageTag: 7.10.2"
-
-- name: Deploy Kibana in AKS using Helm
-  helm:
+- name: Deploy Kibana
+  community.kubernetes.helm:
     name: kibana
-    chart: elastic/kibana
-    release_namespace: default
+    chart_ref: elastic/kibana
+    chart_version: "{{ elk_chart_version }}"
+    release_namespace: "{{ elk_namespace }}"
     values:
-      - "imageTag: 7.10.2"
-      - "replicas: 1"
+      ingress:
+        enabled: true
+        hosts:
+          - host: kibana.{{ cluster_domain }}
+        tls:
+          - secretName: kibana-tls
+            hosts:
+              - kibana.{{ cluster_domain }}
+
+- name: Deploy Logstash
+  community.kubernetes.helm:
+    name: logstash
+    chart_ref: elastic/logstash
+    chart_version: "{{ elk_chart_version }}"
+    release_namespace: "{{ elk_namespace }}"

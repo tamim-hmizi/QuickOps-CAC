@@ -1,9 +1,37 @@
----
-- name: Deploy Clair in AKS using Helm
-  helm:
-    name: clair
-    chart: quay/clair
-    release_namespace: default
-    values:
-      - "clair.image.tag: v4.3.2"
-      - "clair.service.port: 6060"
+- name: Create Clair namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ clair_namespace }}"
+    state: present
+
+- name: Add Clair Helm repo
+  community.kubernetes.helm_repository:
+    name: "clair"
+    repo_url: "{{ clair_helm_repo }}"
+
+- name: Deploy Clair via Helm
+  community.kubernetes.helm:
+    name: "{{ clair_release_name }}"
+    chart_ref: clair/clair
+    chart_version: "{{ clair_chart_version }}"
+    release_namespace: "{{ clair_namespace }}"
+    values: "{{ clair_values }}"
+
+- name: Create Issuer for Clair TLS
+  kubernetes.core.k8s:
+    api_version: cert-manager.io/v1
+    kind: Issuer
+    namespace: "{{ clair_namespace }}"
+    name: "{{ clair_issuer_name }}"
+    definition:
+      spec:
+        acme:
+          server: "{{ cert_manager_acme_server }}"
+          email: "{{ cert_email }}"
+          privateKeySecretRef:
+            name: clair-issuer-key
+          solvers:
+            - http01:
+                ingress:
+                  class: nginx

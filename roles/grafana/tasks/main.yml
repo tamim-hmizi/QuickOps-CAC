@@ -1,10 +1,19 @@
----
-- name: Deploy Grafana in AKS using Helm
-  helm:
+- name: Create Grafana namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ grafana_namespace }}"
+    state: present
+
+- name: Add Grafana Helm repo
+  community.kubernetes.helm_repository:
     name: grafana
-    chart: grafana/grafana
-    release_namespace: default
-    values:
-      - "replicas: 1"
-      - "adminPassword: '100701'"
-      - "persistence.enabled: false"
+    repo_url: "{{ grafana_helm_repo }}"
+
+- name: Deploy Grafana
+  community.kubernetes.helm:
+    name: "{{ grafana_release_name }}"
+    chart_ref: grafana/grafana
+    chart_version: "{{ grafana_chart_version }}"
+    release_namespace: "{{ grafana_namespace }}"
+    values: "{{ grafana_values }}"

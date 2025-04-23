@@ -1,0 +1,8 @@
+- name: Provision DevOps VM
+  hosts: vm
+  become: true
+  roles:
+    - ansible
+    - docker
+    - terraform
+    - nexus

@@ -1,0 +1,30 @@
+- name: Install Ansible prerequisites
+  ansible.builtin.apt:
+    name:
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - curl
+    update_cache: true
+
+- name: Add Ansible GPG key
+  ansible.builtin.apt_key:
+    url: "{{ ansible_gpg_key_url }}"
+    state: present
+
+- name: Add Ansible APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb {{ ansible_repo_url }} {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Install Ansible
+  ansible.builtin.apt:
+    name: "ansible={{ ansible_desired_version }}"
+    state: present
+
+- name: Validate Ansible installation
+  ansible.builtin.command:
+    cmd: ansible --version
+  register: ansible_check
+  changed_when: false
+  failed_when: ansible_check.rc != 0

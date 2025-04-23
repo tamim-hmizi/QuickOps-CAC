@@ -1,0 +1,4 @@
+docker_version: "20.10.12"
+docker_compose_version: "v2.24.4"
+docker_cli_plugins_dir: "/usr/local/lib/docker/cli-plugins"
+devops_user: "devops"

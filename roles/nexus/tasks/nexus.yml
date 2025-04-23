@@ -1,0 +1,54 @@
+- name: Create Nexus data volume
+  ansible.builtin.command:
+    cmd: docker volume create {{ nexus_volume_name }}
+  args:
+    creates: "/var/lib/docker/volumes/{{ nexus_volume_name }}"
+
+- name: Run Nexus container
+  community.docker.docker_container:
+    name: nexus
+    image: "sonatype/nexus3:{{ nexus_version }}"
+    state: started
+    recreate: true
+    ports:
+      - "{{ nexus_http_port }}:8081"
+      - "{{ nexus_repo_port }}:5000"
+    volumes:
+      - "{{ nexus_volume_name }}:/nexus-data"
+    env:
+      INSTALL4J_ADD_VM_PARAMS: "-Xms1200m -Xmx1200m"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+- name: Wait for Nexus API readiness
+  ansible.builtin.uri:
+    url: "http://localhost:{{ nexus_http_port }}/service/rest/v1/status"
+    status_code: 200
+  register: nexus_up
+  until: nexus_up.status == 200
+  retries: 30
+  delay: 10
+  changed_when: false
+
+- name: Read initial admin password
+  ansible.builtin.command:
+    cmd: docker exec nexus cat /nexus-data/admin.password
+  register: raw_pass
+  changed_when: false
+
+- name: Change default admin password
+  ansible.builtin.uri:
+    url: "http://localhost:{{ nexus_http_port }}/service/rest/v1/security/users/admin/change-password"
+    method: PUT
+    user: admin
+    password: "{{ raw_pass.stdout | trim }}"
+    force_basic_auth: true
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body:
+      password: "{{ vault_nexus_admin_password }}"
+    status_code: 204

@@ -1,0 +1,19 @@
+jenkins_namespace: jenkins
+jenkins_release_name: jenkins
+jenkins_helm_repo: https://charts.jenkins.io
+jenkins_chart_version: "4.0.0"
+jenkins_values:
+  controller:
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-staging
+      hosts:
+        - jenkins.{{ cluster_domain }}
+    servicePort: 8080
+  agent:
+    enabled: true
+    name: "{{ jenkins_agents_service_account }}"
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 1000

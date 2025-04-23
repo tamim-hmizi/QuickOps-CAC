@@ -1,0 +1,9 @@
+- name: Restart Docker
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+
+- name: Restart NGINX
+  ansible.builtin.service:
+    name: nginx
+    state: restarted

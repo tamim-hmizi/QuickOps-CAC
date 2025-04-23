@@ -1,0 +1,28 @@
+- name: Create Jenkins Agents namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ jenkins_agents_namespace }}"
+    state: present
+
+- name: Create Jenkins agent ServiceAccount
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: ServiceAccount
+    namespace: "{{ jenkins_agents_namespace }}"
+    name: "{{ jenkins_agents_service_account }}"
+
+- name: Create ClusterRoleBinding for Jenkins agents
+  kubernetes.core.k8s:
+    api_version: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    name: jenkins-agent-binding
+    definition:
+      subjects:
+        - kind: ServiceAccount
+          name: "{{ jenkins_agents_service_account }}"
+          namespace: "{{ jenkins_agents_namespace }}"
+      roleRef:
+        kind: ClusterRole
+        name: cluster-admin
+        apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,3 @@
+- name: Ansible role completed
+  ansible.builtin.debug:
+    msg: "Ansible setup done"

@@ -1,9 +1,11 @@
----
-- name: Start Nexus Repository container
-  docker_container:
-    name: nexus
-    image: sonatype/nexus3
-    state: started
-    restart_policy: always
-    published_ports:
-      - "8081:8081"
+- name: Include Docker setup
+  ansible.builtin.include_tasks: docker.yml
+
+- name: Include Nexus setup
+  ansible.builtin.include_tasks: nexus.yml
+
+- name: Include HTTPS configuration
+  ansible.builtin.include_tasks: nginx.yml
+
+- name: Configure UFW firewall
+  ansible.builtin.include_tasks: ufw.yml

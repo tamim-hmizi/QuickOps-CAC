@@ -1,0 +1,15 @@
+sonarqube_namespace: sonarqube
+sonarqube_release_name: sonarqube
+sonarqube_helm_repo: https://SonarSource.github.io/helm-chart-sonarqube
+sonarqube_chart_version: "10.8.0"
+sonarqube_values:
+  ingress:
+    enabled: true
+    hosts:
+      - host: sonarqube.{{ cluster_domain }}
+    tls:
+      - secretName: sonarqube-tls
+        hosts:
+          - sonarqube.{{ cluster_domain }}
+  postgresql:
+    enabled: true
