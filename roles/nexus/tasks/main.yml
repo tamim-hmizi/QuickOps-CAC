@@ -4,6 +4,9 @@
 - name: Include Nexus setup
   ansible.builtin.include_tasks: nexus.yml
 
+- name: Include Nexus registry configuration
+  ansible.builtin.include_tasks: configure_nexus_registry.yml
+
 - name: Include HTTPS configuration
   ansible.builtin.include_tasks: nginx.yml
 

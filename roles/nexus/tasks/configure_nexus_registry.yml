@@ -1,0 +1,14 @@
+- name: Create Docker daemon config to use Nexus as insecure registry
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "insecure-registries": ["localhost:5000"]
+      }
+    mode: "0644"
+
+- name: Restart Docker to apply new config
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted
+    enabled: true
