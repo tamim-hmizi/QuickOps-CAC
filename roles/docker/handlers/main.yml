@@ -2,3 +2,7 @@
   ansible.builtin.command:
     cmd: docker compose version
   changed_when: false
+
+- name: Docker role completed
+  ansible.builtin.debug:
+    msg: "Docker setup done"

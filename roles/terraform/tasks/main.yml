@@ -34,3 +34,6 @@
   register: tf_check
   changed_when: false
   failed_when: tf_check.rc != 0
+
+- name: Terraform role completed
+  ansible.builtin.meta: flush_handlers

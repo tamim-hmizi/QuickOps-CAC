@@ -1,5 +1,8 @@
-- name: Configuring VM tools
-  ansible.builtin.import_playbook: vm_setup.yml
-
-- name: Configuring Kubernetes tools
-  ansible.builtin.import_playbook: k8s_setup.yml
+- name: Provision DevOps VM
+  hosts: vm
+  become: true
+  roles:
+    - ansible
+    - terraform
+    - docker
+    - nexus

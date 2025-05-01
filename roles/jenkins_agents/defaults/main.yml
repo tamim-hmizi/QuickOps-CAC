@@ -1,3 +1,0 @@
-jenkins_agents_namespace: jenkins
-jenkins_agents_image: "jenkins/inbound-agent:latest"
-jenkins_agents_service_account: jenkins-agent

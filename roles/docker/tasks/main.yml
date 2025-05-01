@@ -19,9 +19,12 @@
     filename: docker
     state: present
 
-- name: Install Docker Engine
+- name: Install Docker Engine and CLI
   ansible.builtin.apt:
-    name: "docker-ce={{ docker_version }}"
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
     state: present
 
 - name: Ensure Docker CLI plugins directory exists
@@ -32,7 +35,7 @@
 
 - name: Install Docker Compose v2
   ansible.builtin.get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-x86_64"
+    url: "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64"
     dest: "{{ docker_cli_plugins_dir }}/docker-compose"
     mode: "0755"
   notify: Reload Docker Compose
@@ -63,3 +66,6 @@
   register: compose_ver
   changed_when: false
   failed_when: compose_ver.rc != 0
+
+- name: Docker role completed
+  ansible.builtin.meta: flush_handlers

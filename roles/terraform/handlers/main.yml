@@ -1,0 +1,3 @@
+- name: Terraform role completed
+  ansible.builtin.debug:
+    msg: "Terraform setup done"

@@ -7,19 +7,15 @@
       - curl
     update_cache: true
 
-- name: Add Ansible GPG key
-  ansible.builtin.apt_key:
-    url: "{{ ansible_gpg_key_url }}"
-    state: present
-
-- name: Add Ansible APT repository
+- name: Add the official Ansible PPA
   ansible.builtin.apt_repository:
-    repo: "deb {{ ansible_repo_url }} {{ ansible_distribution_release }} main"
+    repo: ppa:ansible/ansible
     state: present
+    update_cache: true
 
 - name: Install Ansible
   ansible.builtin.apt:
-    name: "ansible={{ ansible_desired_version }}"
+    name: ansible
     state: present
 
 - name: Validate Ansible installation
@@ -28,3 +24,6 @@
   register: ansible_check
   changed_when: false
   failed_when: ansible_check.rc != 0
+
+- name: Ansible role completed
+  ansible.builtin.meta: flush_handlers

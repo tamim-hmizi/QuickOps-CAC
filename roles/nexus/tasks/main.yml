@@ -1,14 +1,56 @@
-- name: Include Docker setup
-  ansible.builtin.include_tasks: docker.yml
+- name: Check if Nexus container exists
+  community.docker.docker_container_info:
+    name: "{{ nexus_container_name }}"
+  register: nexus_container_status
+  failed_when: false
 
-- name: Include Nexus setup
-  ansible.builtin.include_tasks: nexus.yml
+- name: Stop Nexus container if it exists
+  community.docker.docker_container:
+    name: "{{ nexus_container_name }}"
+    state: stopped
+    image: "sonatype/nexus3:{{ nexus_version }}"
+  when: nexus_container_status.container is defined
 
-- name: Include Nexus registry configuration
-  ansible.builtin.include_tasks: configure_nexus_registry.yml
+- name: Remove Nexus container if it exists
+  community.docker.docker_container:
+    name: "{{ nexus_container_name }}"
+    state: absent
+    image: "sonatype/nexus3:{{ nexus_version }}"
+  when: nexus_container_status.container is defined
 
-- name: Include HTTPS configuration
-  ansible.builtin.include_tasks: nginx.yml
+- name: Check if Nexus volume exists
+  community.docker.docker_volume_info:
+    name: "{{ nexus_volume_name }}"
+  register: nexus_volume_status
+  failed_when: false
 
-- name: Configure UFW firewall
-  ansible.builtin.include_tasks: ufw.yml
+- name: Remove Nexus Docker volume if it exists
+  community.docker.docker_volume:
+    name: "{{ nexus_volume_name }}"
+    state: absent
+  when: nexus_volume_status.volume is defined
+
+- name: Create Nexus Docker volume
+  community.docker.docker_volume:
+    name: "{{ nexus_volume_name }}"
+
+- name: Deploy Nexus container
+  community.docker.docker_container:
+    name: "{{ nexus_container_name }}"
+    image: "sonatype/nexus3:{{ nexus_version }}"
+    ports:
+      - "{{ nexus_http_port }}:8081"
+    volumes:
+      - "{{ nexus_volume_name }}:/nexus-data"
+    env:
+      INSTALL4J_ADD_VM_PARAMS: "-Xms1200m -Xmx1200m"
+    restart_policy: always
+    state: started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+
+- name: Nexus role completed
+  ansible.builtin.meta: flush_handlers
