@@ -1,4 +1,4 @@
-nexus_version: "3.79.1"
+nexus_version: "latest"
 nexus_volume_name: "nexus-data"
 nexus_container_name: "nexus"
 nexus_http_port: 8081

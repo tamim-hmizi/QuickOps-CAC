@@ -1,0 +1,50 @@
+- name: Ensure vm.max_map_count is set
+  ansible.posix.sysctl:
+    name: vm.max_map_count
+    value: "262144"
+    state: present
+    reload: true
+
+- name: Update APT package cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Upgrade all system packages
+  ansible.builtin.apt:
+    upgrade: dist
+  register: upgrade_result
+  notify: Reboot if required
+
+- name: Install common tools
+  ansible.builtin.apt:
+    name:
+      - curl
+      - git
+      - htop
+      - unzip
+      - net-tools
+      - python3.8
+      - python3-pip
+      - libpq-dev
+    state: present
+    update_cache: true
+
+- name: Install Python dependencies
+  ansible.builtin.pip:
+    name:
+      - psycopg2-binary
+      - docker
+      - ansible
+    state: present
+    executable: pip3
+
+- name: Ensure Python packages are installed
+  ansible.builtin.command:
+    cmd: "python3 -m pip show psycopg2-binary"
+  register: pip_check
+  changed_when: false
+  failed_when: pip_check.rc != 0
+
+- name: Config role completed
+  ansible.builtin.meta: flush_handlers

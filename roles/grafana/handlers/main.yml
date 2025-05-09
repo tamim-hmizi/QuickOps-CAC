@@ -1,0 +1,3 @@
+- name: Grafana role completed
+  ansible.builtin.debug:
+    msg: "Grafana setup done"

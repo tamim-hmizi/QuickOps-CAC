@@ -1,0 +1,2 @@
+postgresql_sonarqube_container_name: "postgresql-sonarqube"
+postgresql_sonarqube_data: "sonarqube-db"

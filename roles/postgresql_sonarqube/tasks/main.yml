@@ -1,0 +1,56 @@
+- name: Check if PostgreSQL container exists
+  community.docker.docker_container_info:
+    name: "{{ postgresql_sonarqube_container_name }}"
+  register: postgresql_sonarqube_container_status
+  failed_when: false
+
+- name: Stop PostgreSQL container if it exists
+  community.docker.docker_container:
+    name: "{{ postgresql_sonarqube_container_name }}"
+    state: stopped
+    image: "postgres:latest"
+  when: postgresql_sonarqube_container_status.container is defined
+
+- name: Remove PostgreSQL container if it exists
+  community.docker.docker_container:
+    name: "{{ postgresql_sonarqube_container_name }}"
+    state: absent
+    image: "postgres:latest"
+  when: postgresql_sonarqube_container_status.container is defined
+
+- name: Check if PostgreSQL volume exists
+  community.docker.docker_volume_info:
+    name: "{{ postgresql_sonarqube_data }}"
+  register: postgresql_sonarqube_volume_status
+  failed_when: false
+
+- name: Create PostgreSQL Docker volume if not exists
+  community.docker.docker_volume:
+    name: "{{ postgresql_sonarqube_data }}"
+  when: postgresql_sonarqube_volume_status.volume is not defined
+
+- name: Deploy PostgreSQL container for SonarQube
+  community.docker.docker_container:
+    name: "{{ postgresql_sonarqube_container_name }}"
+    image: "postgres:latest"
+    networks:
+      - name: sonarqube_network
+    ports:
+      - "5432:5432"
+    volumes:
+      - "{{ postgresql_sonarqube_data }}:/var/lib/postgresql/data"
+    env:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonar
+    restart_policy: always
+    state: started
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "sonar"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+- name: PostgreSQL SonarQube role completed
+  ansible.builtin.meta: flush_handlers

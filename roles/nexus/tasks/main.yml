@@ -24,15 +24,10 @@
   register: nexus_volume_status
   failed_when: false
 
-- name: Remove Nexus Docker volume if it exists
+- name: Create Nexus Docker volume if not exists
   community.docker.docker_volume:
     name: "{{ nexus_volume_name }}"
-    state: absent
-  when: nexus_volume_status.volume is defined
-
-- name: Create Nexus Docker volume
-  community.docker.docker_volume:
-    name: "{{ nexus_volume_name }}"
+  when: nexus_volume_status.volume is not defined
 
 - name: Deploy Nexus container
   community.docker.docker_container:

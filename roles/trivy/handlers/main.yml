@@ -1,0 +1,10 @@
+- name: Verify Trivy installation
+  ansible.builtin.command:
+    cmd: trivy --version
+  register: trivy_version
+  failed_when: false
+  changed_when: false
+
+- name: Trivy role completed
+  ansible.builtin.debug:
+    msg: "Trivy setup done"

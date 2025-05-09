@@ -1,0 +1,3 @@
+- name: SonarQube role completed
+  ansible.builtin.debug:
+    msg: "SonarQube setup done"

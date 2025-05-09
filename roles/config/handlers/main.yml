@@ -1,0 +1,10 @@
+- name: Reboot if required
+  ansible.builtin.reboot:
+    msg: "Rebooting after kernel or libc upgrade"
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+
+- name: Config role completed
+  ansible.builtin.debug:
+    msg: "Config setup done"

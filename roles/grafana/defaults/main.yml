@@ -1,0 +1,4 @@
+grafana_container_name: "grafana"
+grafana_data_volume: "grafana-data"
+grafana_config_file: "/etc/grafana/grafana.ini"
+grafana_http_port: 3000

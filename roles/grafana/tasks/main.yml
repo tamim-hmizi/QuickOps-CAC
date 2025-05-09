@@ -1,0 +1,47 @@
+- name: Check if Grafana container exists
+  community.docker.docker_container_info:
+    name: "{{ grafana_container_name }}"
+  register: grafana_container_status
+  failed_when: false
+
+- name: Stop and Remove Grafana container if it exists
+  community.docker.docker_container:
+    name: "{{ grafana_container_name }}"
+    state: absent
+    image: "grafana/grafana:latest"
+  when: grafana_container_status.container is defined
+
+- name: Ensure Grafana container volume exists
+  community.docker.docker_volume:
+    name: "{{ grafana_data_volume }}"
+    state: present
+
+- name: Create Grafana configuration file from template
+  ansible.builtin.template:
+    src: "grafana.ini.j2"
+    dest: "/tmp/grafana.ini"
+    mode: "0644"
+
+- name: Deploy Grafana container
+  community.docker.docker_container:
+    name: "{{ grafana_container_name }}"
+    image: "grafana/grafana:latest"
+    ports:
+      - "{{ grafana_http_port }}:3000"
+    volumes:
+      - "{{ grafana_data_volume }}:/var/lib/grafana"
+      - "/tmp/grafana.ini:/etc/grafana/grafana.ini"
+    env:
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+    restart_policy: always
+    state: started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      retries: 10
+      start_period: 60s
+      timeout: 10s
+
+- name: Grafana role completed
+  ansible.builtin.meta: flush_handlers

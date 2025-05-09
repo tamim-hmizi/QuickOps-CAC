@@ -5,13 +5,11 @@
       - apt-transport-https
       - ca-certificates
       - curl
-    update_cache: true
 
 - name: Add the official Ansible PPA
   ansible.builtin.apt_repository:
     repo: ppa:ansible/ansible
     state: present
-    update_cache: true
 
 - name: Install Ansible
   ansible.builtin.apt:

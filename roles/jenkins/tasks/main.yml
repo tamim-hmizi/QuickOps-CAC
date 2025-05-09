@@ -1,0 +1,63 @@
+- name: Check if Jenkins container exists
+  community.docker.docker_container_info:
+    name: "{{ jenkins_container_name }}"
+  register: jenkins_container_status
+  failed_when: false
+
+- name: Stop Jenkins container if it exists
+  community.docker.docker_container:
+    name: "{{ jenkins_container_name }}"
+    state: stopped
+    image: "jenkins/jenkins:{{ jenkins_version }}"
+  when: jenkins_container_status.container is defined
+
+- name: Remove Jenkins container if it exists
+  community.docker.docker_container:
+    name: "{{ jenkins_container_name }}"
+    state: absent
+    image: "jenkins/jenkins:{{ jenkins_version }}"
+  when: jenkins_container_status.container is defined
+
+- name: Check if Jenkins volume exists
+  community.docker.docker_volume_info:
+    name: "{{ jenkins_volume_name }}"
+  register: jenkins_volume_status
+  failed_when: false
+
+- name: Create Jenkins Docker volume if not exists
+  community.docker.docker_volume:
+    name: "{{ jenkins_volume_name }}"
+  when: jenkins_volume_status.volume is not defined
+
+- name: Ensure Jenkins log directory exists on host
+  ansible.builtin.file:
+    path: "{{ jenkins_log_volume_host_path }}"
+    state: directory
+    mode: "0755"
+
+- name: Deploy Jenkins container with health check
+  community.docker.docker_container:
+    name: "{{ jenkins_container_name }}"
+    image: "jenkins/jenkins:{{ jenkins_version }}"
+    ports:
+      - "{{ jenkins_http_port }}:8080"
+    volumes:
+      - "{{ jenkins_volume_name }}:/var/jenkins_home"
+      - "{{ jenkins_log_volume_host_path }}:/var/log/jenkins"
+    restart_policy: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/login || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    state: started
+
+- name: Verify Jenkins container is running
+  community.docker.docker_container_info:
+    name: "{{ jenkins_container_name }}"
+  register: jenkins_container_info
+  failed_when: jenkins_container_info.container.State.Running != true
+
+- name: Jenkins role completed
+  ansible.builtin.meta: flush_handlers

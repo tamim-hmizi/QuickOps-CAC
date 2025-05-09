@@ -2,7 +2,15 @@
   hosts: vm
   become: true
   roles:
+    - config
     - ansible
     - terraform
     - docker
     - nexus
+    - jenkins
+    - trivy
+    - network_sonarqube
+    - postgresql_sonarqube
+    - sonarqube
+    - prometheus
+    - grafana

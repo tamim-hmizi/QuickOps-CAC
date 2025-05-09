@@ -1,0 +1,28 @@
+- name: Download Trivy binary
+  ansible.builtin.get_url:
+    url: "https://github.com/aquasecurity/trivy/releases/download/v0.19.2/trivy_0.19.2_Linux-64bit.tar.gz"
+    dest: "/tmp/trivy.tar.gz"
+    checksum: "sha256:4863d015071936e8f5d4610c99eb8149b368a24453b464fff41133d4609b88a8"
+    force: true
+    mode: "0644"
+  register: trivy_download
+
+- name: Extract Trivy binary
+  ansible.builtin.unarchive:
+    src: "/tmp/trivy.tar.gz"
+    dest: "/tmp/"
+    remote_src: true
+    creates: "/tmp/trivy"
+    mode: "0644"
+
+- name: Move Trivy binary to /usr/local/bin and set correct permissions
+  ansible.builtin.copy:
+    src: "/tmp/trivy"
+    dest: "/usr/local/bin/trivy"
+    mode: "0755"
+    force: true
+    remote_src: true
+  notify: Verify Trivy installation
+
+- name: Trivy role completed
+  ansible.builtin.meta: flush_handlers

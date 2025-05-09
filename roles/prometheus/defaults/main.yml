@@ -1,0 +1,3 @@
+prometheus_container_name: "prometheus"
+prometheus_data_volume: "prometheus-data"
+prometheus_config_file: "/tmp/prometheus.yml"

@@ -1,0 +1,9 @@
+sonarqube_version: "latest"
+sonarqube_container_name: "sonarqube"
+sonarqube_http_port: 9000
+sonarqube_volume_name: "sonarqube-data"
+sonarqube_db_host: "postgresql-sonarqube"
+sonarqube_db_port: 5432
+sonarqube_db_name: "sonar"
+sonarqube_db_user: "sonar"
+sonarqube_db_password: "sonar"
