@@ -5,17 +5,6 @@
     state: present
     reload: true
 
-- name: Update APT package cache
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-
-- name: Upgrade all system packages
-  ansible.builtin.apt:
-    upgrade: dist
-  register: upgrade_result
-  notify: Reboot if required
-
 - name: Install common tools
   ansible.builtin.apt:
     name:
