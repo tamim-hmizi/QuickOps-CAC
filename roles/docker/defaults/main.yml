@@ -1,2 +1,2 @@
 docker_cli_plugins_dir: "/usr/local/lib/docker/cli-plugins"
-devops_user: "devops"
+devops_user: "quickops"

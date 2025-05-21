@@ -2,5 +2,5 @@ all:
   hosts:
     vm:
       ansible_host: quickops.dc2.cloudapp.xpressazure.com
-      ansible_user: devops
+      ansible_user: quickops
       ansible_ssh_private_key_file: ~/.ssh/id_rsa

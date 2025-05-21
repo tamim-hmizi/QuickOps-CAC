@@ -1,4 +1,4 @@
-- name: Provision DevOps VM
+- name: Configure Quickops VM
   hosts: vm
   become: true
   roles:
