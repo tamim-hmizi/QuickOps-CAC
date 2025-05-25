@@ -5,7 +5,7 @@
     state: present
     reload: true
 
-- name: Install common tools
+- name: Install common tools and Python venv support
   ansible.builtin.apt:
     name:
       - curl
@@ -15,24 +15,35 @@
       - net-tools
       - python3
       - python3-pip
+      - python3-venv
       - libpq-dev
       - openjdk-17-jdk
     state: present
     update_cache: true
 
-- name: Install Python dependencies
-  ansible.builtin.pip:
-    name:
-      - psycopg2-binary
-      - docker
-      - requests-unixsocket
-      - ansible
-    state: present
-    executable: pip3
-
-- name: Ensure Python packages are installed
+- name: Create a virtual environment for Python tools
   ansible.builtin.command:
-    cmd: "python3 -m pip show psycopg2-binary"
+    cmd: python3 -m venv /opt/quickops-venv
+    creates: /opt/quickops-venv/bin/activate
+  changed_when: false
+
+- name: Upgrade pip in the virtual environment
+  ansible.builtin.command:
+    cmd: /opt/quickops-venv/bin/pip install --upgrade pip
+  register: upgrade_pip
+  changed_when: "'Successfully installed' in upgrade_pip.stdout or 'Requirement already satisfied' not in upgrade_pip.stdout"
+  failed_when: upgrade_pip.rc != 0
+
+- name: Install Python dependencies in the virtual environment
+  ansible.builtin.command:
+    cmd: /opt/quickops-venv/bin/pip install psycopg2-binary docker requests-unixsocket ansible
+  register: install_deps
+  changed_when: "'Successfully installed' in install_deps.stdout or 'Requirement already satisfied' not in install_deps.stdout"
+  failed_when: install_deps.rc != 0
+
+- name: Ensure Python package psycopg2-binary is installed
+  ansible.builtin.command:
+    cmd: /opt/quickops-venv/bin/pip show psycopg2-binary
   register: pip_check
   changed_when: false
   failed_when: pip_check.rc != 0
