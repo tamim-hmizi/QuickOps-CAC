@@ -25,6 +25,7 @@
     name:
       - psycopg2-binary
       - docker
+      - requests-unixsocket
       - ansible
     state: present
     executable: pip3
