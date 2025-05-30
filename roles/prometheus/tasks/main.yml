@@ -29,6 +29,18 @@
     dest: "/tmp/prometheus.yml"
     mode: "0644"
 
+- name: Ensure /etc/prometheus directory exists
+  ansible.builtin.file:
+    path: /etc/prometheus
+    state: directory
+    mode: "0755"
+
+- name: Ensure empty Prometheus targets file exists
+  ansible.builtin.copy:
+    dest: "/etc/prometheus/quickops-targets.json"
+    content: "[]"
+    mode: "0644"
+
 - name: Deploy Prometheus container
   community.docker.docker_container:
     name: "{{ prometheus_container_name }}"
@@ -38,6 +50,7 @@
     volumes:
       - "{{ prometheus_data_volume }}:/prometheus"
       - "/tmp/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "/etc/prometheus/quickops-targets.json:/etc/prometheus/quickops-targets.json"
     env:
       PROMETHEUS_CONFIG_FILE: "/etc/prometheus/prometheus.yml"
     restart_policy: always
