@@ -8,26 +8,13 @@
   community.docker.docker_container:
     name: "{{ prometheus_container_name }}"
     state: stopped
-    image: "prom/prometheus:latest"
   when: prometheus_container_status.container is defined
 
 - name: Remove Prometheus container if it exists
   community.docker.docker_container:
     name: "{{ prometheus_container_name }}"
     state: absent
-    image: "prom/prometheus:latest"
   when: prometheus_container_status.container is defined
-
-- name: Create Prometheus Docker volume if not exists
-  community.docker.docker_volume:
-    name: "{{ prometheus_data_volume }}"
-  when: prometheus_data_volume_status.volume is not defined
-
-- name: Create Prometheus configuration file from template
-  ansible.builtin.template:
-    src: "prometheus.yml.j2"
-    dest: "/tmp/prometheus.yml"
-    mode: "0644"
 
 - name: Ensure /etc/prometheus directory exists
   ansible.builtin.file:
@@ -35,11 +22,22 @@
     state: directory
     mode: "0755"
 
-- name: Ensure empty Prometheus targets file exists
+- name: Create Prometheus config file in /etc/prometheus
+  ansible.builtin.template:
+    src: "prometheus.yml.j2"
+    dest: "/etc/prometheus/prometheus.yml"
+    mode: "0644"
+
+- name: Ensure Prometheus targets file exists
   ansible.builtin.copy:
     dest: "/etc/prometheus/quickops-targets.json"
     content: "[]"
     mode: "0644"
+  when: not ansible_check_mode
+
+- name: Create Prometheus data volume if not exists
+  community.docker.docker_volume:
+    name: "{{ prometheus_data_volume }}"
 
 - name: Deploy Prometheus container
   community.docker.docker_container:
@@ -49,7 +47,7 @@
       - "9090:9090"
     volumes:
       - "{{ prometheus_data_volume }}:/prometheus"
-      - "/tmp/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
       - "/etc/prometheus/quickops-targets.json:/etc/prometheus/quickops-targets.json"
     env:
       PROMETHEUS_CONFIG_FILE: "/etc/prometheus/prometheus.yml"

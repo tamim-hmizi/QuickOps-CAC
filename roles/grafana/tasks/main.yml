@@ -8,18 +8,23 @@
   community.docker.docker_container:
     name: "{{ grafana_container_name }}"
     state: absent
-    image: "grafana/grafana:latest"
   when: grafana_container_status.container is defined
 
-- name: Ensure Grafana container volume exists
+- name: Ensure Grafana data volume exists
   community.docker.docker_volume:
     name: "{{ grafana_data_volume }}"
     state: present
 
-- name: Create Grafana configuration file from template
+- name: Ensure /etc/grafana directory exists
+  ansible.builtin.file:
+    path: "/etc/grafana"
+    state: directory
+    mode: "0755"
+
+- name: Create persistent Grafana config from template
   ansible.builtin.template:
     src: "grafana.ini.j2"
-    dest: "/tmp/grafana.ini"
+    dest: "/etc/grafana/grafana.ini"
     mode: "0644"
 
 - name: Deploy Grafana container
@@ -30,7 +35,7 @@
       - "{{ grafana_http_port }}:3000"
     volumes:
       - "{{ grafana_data_volume }}:/var/lib/grafana"
-      - "/tmp/grafana.ini:/etc/grafana/grafana.ini"
+      - "/etc/grafana/grafana.ini:/etc/grafana/grafana.ini"
     env:
       GF_SECURITY_ADMIN_USER: "admin"
       GF_SECURITY_ADMIN_PASSWORD: "admin"
