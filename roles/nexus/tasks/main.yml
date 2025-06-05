@@ -36,7 +36,6 @@
     ports:
       - "{{ nexus_http_port }}:8081"
       - "5000:5000"
-      - "{{ nexus_https_port }}:5050"
     volumes:
       - "{{ nexus_volume_name }}:/nexus-data"
     env:
