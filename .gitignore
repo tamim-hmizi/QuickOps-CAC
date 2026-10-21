@@ -1,1 +1,4 @@
 collections/
+.env
+__pycache__/
+*.retry
