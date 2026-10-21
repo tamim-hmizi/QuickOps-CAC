@@ -48,7 +48,7 @@
 
 - name: Add devops user to docker group
   ansible.builtin.user:
-    name: "{{ devops_user }}"
+    name: "{{ docker_devops_user }}"
     groups: docker
     append: true
     state: present
@@ -63,9 +63,9 @@
 - name: Verify Docker Compose version
   ansible.builtin.command:
     cmd: docker compose version
-  register: compose_ver
+  register: docker_compose_check
   changed_when: false
-  failed_when: compose_ver.rc != 0
+  failed_when: docker_compose_check.rc != 0
 
 - name: Docker role completed
   ansible.builtin.meta: flush_handlers

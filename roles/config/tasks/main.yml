@@ -30,23 +30,23 @@
 - name: Upgrade pip in the virtual environment
   ansible.builtin.command:
     cmd: /opt/quickops-venv/bin/pip install --upgrade pip
-  register: upgrade_pip
-  changed_when: "'Successfully installed' in upgrade_pip.stdout or 'Requirement already satisfied' not in upgrade_pip.stdout"
-  failed_when: upgrade_pip.rc != 0
+  register: config_upgrade_pip
+  changed_when: "'Successfully installed' in config_upgrade_pip.stdout or 'Requirement already satisfied' not in config_upgrade_pip.stdout"
+  failed_when: config_upgrade_pip.rc != 0
 
 - name: Install Python dependencies in the virtual environment
   ansible.builtin.command:
     cmd: /opt/quickops-venv/bin/pip install psycopg2-binary docker requests-unixsocket ansible
-  register: install_deps
-  changed_when: "'Successfully installed' in install_deps.stdout or 'Requirement already satisfied' not in install_deps.stdout"
-  failed_when: install_deps.rc != 0
+  register: config_install_deps
+  changed_when: "'Successfully installed' in config_install_deps.stdout or 'Requirement already satisfied' not in config_install_deps.stdout"
+  failed_when: config_install_deps.rc != 0
 
 - name: Ensure Python package psycopg2-binary is installed
   ansible.builtin.command:
     cmd: /opt/quickops-venv/bin/pip show psycopg2-binary
-  register: pip_check
+  register: config_pip_check
   changed_when: false
-  failed_when: pip_check.rc != 0
+  failed_when: config_pip_check.rc != 0
 
 - name: Config role completed
   ansible.builtin.meta: flush_handlers

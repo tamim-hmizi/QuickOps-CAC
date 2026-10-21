@@ -34,9 +34,9 @@
 
 - name: Validate Terraform installation
   ansible.builtin.command: terraform --version
-  register: tf_check
+  register: terraform_check
   changed_when: false
-  failed_when: tf_check.rc != 0
+  failed_when: terraform_check.rc != 0
 
 - name: Terraform role completed
   ansible.builtin.meta: flush_handlers
