@@ -1,8 +1,8 @@
 - name: Download Trivy binary
   ansible.builtin.get_url:
-    url: "https://github.com/aquasecurity/trivy/releases/download/v0.19.2/trivy_0.19.2_Linux-64bit.tar.gz"
+    url: "https://github.com/aquasecurity/trivy/releases/download/{{ trivy_version }}/trivy_{{ trivy_version[1:] }}_Linux-64bit.tar.gz"
     dest: "/tmp/trivy.tar.gz"
-    checksum: "sha256:4863d015071936e8f5d4610c99eb8149b368a24453b464fff41133d4609b88a8"
+    checksum: "sha256:e24b1c51293c1b15e4ba8d45bbc7891ba053f90278ec2698f3562c993e145fe7"
     force: true
     mode: "0644"
   register: trivy_download
