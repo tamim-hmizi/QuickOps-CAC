@@ -68,4 +68,4 @@ Default ports: Jenkins 8080, Nexus 8081, SonarQube 9000, Prometheus 9090, Grafan
 
 ## Project context
 
-RFC final year project, 2025, by Tamim Hmizi — https://tamim-hmizi.github.io/Portfolio/
+RFC final year project, 2025, by Tamim Hmizi: https://tamim-hmizi.github.io/Portfolio/
